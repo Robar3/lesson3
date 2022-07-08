@@ -6,10 +6,8 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 
 public class Car implements Runnable {
-    private static int CARS_COUNT;
-    static {
-        CARS_COUNT = 0;
-    }
+    private static int CARS_COUNT=0;
+
     private Race race;
     private int speed;
     private CountDownLatch downLatch;
@@ -23,14 +21,13 @@ public class Car implements Runnable {
     }
     CyclicBarrier cyclicBarrier;
     Semaphore semaphore;
-    public Car(Race race, int speed, CyclicBarrier countDownLatch, Semaphore semaphore, CountDownLatch downLatch) {
+    public Car(Race race, int speed, CyclicBarrier countDownLatch, CountDownLatch downLatch) {
         this.race = race;
         this.speed = speed;
         this.downLatch = downLatch;
         CARS_COUNT++;
         this.name = "Участник #" + CARS_COUNT;
         this.cyclicBarrier =countDownLatch;
-        this.semaphore=semaphore;
     }
     @Override
     public void run() {
@@ -54,7 +51,7 @@ public class Car implements Runnable {
         for (int i = 0; i < race.getStages().size(); i++) {
                 race.getStages().get(i).go(this);
         }
-
+        race.setWinner(this);
         try {
             cyclicBarrier.await();
         } catch (BrokenBarrierException | InterruptedException e) {
